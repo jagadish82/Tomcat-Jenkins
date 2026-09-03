@@ -37,7 +37,7 @@ pipeline {
                     sudo /root/tomcat/bin/shutdown.sh || true
                     sleep 5
                     echo "Copying the WAR file to Tomcat webapps directory..."
-                    sudo cp /root/jenkins-tomcat-sourcecode/target/*.war /root/tomcat/webapps/
+                    sudo cp /root/Jenkins-tomcat-sourcecode/target/*.war /root/tomcat/webapps/
                     echo "Starting Tomcat server..."
                     sudo /root/tomcat/bin/startup.sh
                     sleep 10
