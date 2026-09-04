@@ -10,22 +10,29 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Checking out the code from Git repository...'
                 checkout scm
+                echo 'Checking out the code from Git repository...'
                 }
             }
         
         stage('Build') {
             steps {
                 echo 'Building the project using Maven...'
-                sh 'mvn clean package'
+
+                sh '''
+                    cd /root/Jenkins-tomcat-sourcecode
+                    mvn clean package
+                '''
                 }
             }
 
         stage('verify WAR file') {
             steps {
                 echo 'Verifying the build war file...'
-                sh 'ls -l target/*.war'
+                sh '''
+                    cd /root/Jenkins-tomcat-sourcecode
+                    ls -l target/*.war
+                '''
                 }
             }
 
