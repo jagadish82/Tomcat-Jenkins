@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'maven-3.6.3'
+        maven 'Maven'
         jdk 'jdk21'
     }
 
@@ -34,14 +34,23 @@ pipeline {
 
                 sh '''
                     echo "Stopping Tomcat server..."
-                    sudo /root/tomcat/bin/shutdown.sh || true
+
+                    sudo -n /root/tomcat/bin/shutdown.sh || true
+
                     sleep 5
+
                     echo "Copying the WAR file to Tomcat webapps directory..."
-                    sudo cp /root/Jenkins-tomcat-sourcecode/target/*.war /root/tomcat/webapps/
+
+                    sudo -n cp /root/Jenkins-tomcat-sourcecode/target/*.war /root/tomcat/webapps/
+
                     echo "Starting Tomcat server..."
-                    sudo /root/tomcat/bin/startup.sh
+
+                    sudo -n /root/tomcat/bin/startup.sh
+
                     sleep 10
+
                     echo "Deployment completed successfully."
+                    
                     ls -l /root/tomcat/webapps/
                 '''
                 }
@@ -56,4 +65,3 @@ pipeline {
         }
     }
 }       
-
