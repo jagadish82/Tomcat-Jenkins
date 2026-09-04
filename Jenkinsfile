@@ -42,7 +42,7 @@ pipeline {
             echo "Checking target directory..."
             ls -lah /root/Jenkins-tomcat-sourcecode/target/ || true
 
-            WAR_FILE=$(find /root/Jenkins-tomcat-sourcecode/target/ -name "*.war" | head -n 1)
+            WAR_FILE=$(sudo -n find /root/Jenkins-tomcat-sourcecode/target/ -name "*.war" | head -n 1)
 
             echo "Copying WAR file to Tomcat webapps directory..."
             sudo -n cp "$WAR_FILE" /root/tomcat/webapps/
