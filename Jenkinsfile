@@ -18,25 +18,19 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project using Maven...'
-
-                sh '''
-                    cd /root/Jenkins-tomcat-sourcecode
-                    mvn clean package
-                '''
+                sh 'mvn clean package'
                 }
             }
 
         stage('verify WAR file') {
             steps {
                 echo 'Verifying the build war file...'
-                sh '''
-                    cd /root/Jenkins-tomcat-sourcecode
-                    ls -l target/*.war
-                '''
+                sh 'ls -l target/*.war'
                 }
             }
 
         stage('Deploy to Tomcat') {
+
             steps {
         sh '''
             echo "Stopping Tomcat server..."
@@ -48,15 +42,7 @@ pipeline {
             echo "Checking target directory..."
             ls -lah /root/Jenkins-tomcat-sourcecode/target/ || true
 
-            echo "Looking for WAR file..."
-            WAR_FILE=$(find /root/Jenkins-tomcat-sourcecode/target/ -maxdepth 1 -type f -name "*.war" -print -quit)
-
-            if [ -z "$WAR_FILE" ]; then
-                echo "ERROR: No WAR file found in target directory!"
-                exit 1
-            fi
-
-            echo "WAR file found: $WAR_FILE"
+            WAR_FILE=$(find /root/Jenkins-tomcat-sourcecode/target/ -name "*.war" | head -n 1)
 
             echo "Copying WAR file to Tomcat webapps directory..."
             sudo -n cp "$WAR_FILE" /root/tomcat/webapps/
