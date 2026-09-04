@@ -38,31 +38,43 @@ pipeline {
 
         stage('Deploy to Tomcat') {
             steps {
+        sh '''
+            echo "Stopping Tomcat server..."
 
-                sh '''
-                    echo "Stopping Tomcat server..."
+            sudo -n /root/tomcat/bin/shutdown.sh || true
 
-                    sudo -n /root/tomcat/bin/shutdown.sh || true
+            sleep 5
 
-                    sleep 5
+            echo "Checking target directory..."
+            ls -lah /root/Jenkins-tomcat-sourcecode/target/ || true
 
-                    echo "Copying the WAR file to Tomcat webapps directory..."
+            echo "Looking for WAR file..."
+            WAR_FILE=$(find /root/Jenkins-tomcat-sourcecode/target/ -maxdepth 1 -type f -name "*.war" -print -quit)
 
-                    sudo -n cp /root/Jenkins-tomcat-sourcecode/target/*.war /root/tomcat/webapps/
+            if [ -z "$WAR_FILE" ]; then
+                echo "ERROR: No WAR file found in target directory!"
+                exit 1
+            fi
 
-                    echo "Starting Tomcat server..."
+            echo "WAR file found: $WAR_FILE"
 
-                    sudo -n /root/tomcat/bin/startup.sh
+            echo "Copying WAR file to Tomcat webapps directory..."
+            sudo -n cp "$WAR_FILE" /root/tomcat/webapps/
 
-                    sleep 10
+            echo "Starting Tomcat server..."
+            sudo -n /root/tomcat/bin/startup.sh
 
-                    echo "Deployment completed successfully."
-                    
-                    ls -l /root/tomcat/webapps/
-                '''
-                }
+            sleep 10
+
+            echo "Deployment completed successfully."
+
+            echo "Tomcat webapps contents:"
+            ls -lah /root/tomcat/webapps/
+        '''
             }
         }
+    }    
+
     post {
         success {
             echo 'Deployment completed.'
